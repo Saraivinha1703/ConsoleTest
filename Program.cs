@@ -1,61 +1,66 @@
 ﻿
 using ConsoleTest.Entities;
 
-Random random = new();
+List<Vehicle> vehicles = [
+    new("Mercedes", 250, 5, 30, 17),
+    new("Fiat", 200, 5, 50, 15),
+    new("BMW", 230, 5, 0, 18),
+    new("GM", 240, 2, 4, 17),
+    new("Honda", 250, 2, 25, 14),
+    new("Lexus", 210, 5, 40, 18),
+];
 
-Vehicle vehicle1 = new("Fiat", 200, 5);
-Vehicle vehicle2 = new("Kawasaki", 250, 2);
+int maxRaceDistance = 100;
 
-SpeedCamera speedCamera = new(50, 120);
+bool canRace = true;
 
-double v1SpeedValue = Math.Round(random.NextDouble() * vehicle1.MaxSpeed, 2);
-double? v1Speed = v1SpeedValue < speedCamera.MinSpeed ? null : v1SpeedValue;
-
-double v2SpeedValue = Math.Round(random.NextDouble() * vehicle2.MaxSpeed, 2);
-double? v2Speed = v2SpeedValue < speedCamera.MinSpeed ? null : v2SpeedValue;
-
-Console.WriteLine($"v1: {v1Speed} km/h | v2: {v2Speed} km/h\n\n");
-
-if (v1Speed > speedCamera.MaxSpeed || v1Speed == null)
+do
 {
-    Console.WriteLine("v1 got a ticket! (you idiot)\n\n");
+    Console.WriteLine($"Insert the distance the vehicles are going to race in kilometers (max of {maxRaceDistance} km)");
+    int raceDistance = int.Parse(Console.ReadLine()!);
 
-    switch (v1Speed)
+    if (raceDistance > maxRaceDistance)
     {
-        case > 120:
-            Console.WriteLine("You got a ticket for being too fast!");
-            break;
-        case null:
-            Console.WriteLine("You got a ticket for being a snail!");
-            break;
-        default:
-            Console.WriteLine("Something went wrong...");
-            break;
+        Console.WriteLine($"Invalid distance, the race distance must be under {maxRaceDistance}km\n");
+        return;
     }
-}
-else
-{
-    Console.WriteLine("No money for the government :( from v1\n\n");
-}
 
-if (v2Speed > speedCamera.MaxSpeed || v2Speed == null)
-{
-    Console.WriteLine("v2 got a ticket! (you idiot)\n\n");
-
-    switch (v2Speed)
+    foreach (Vehicle vehicle in vehicles)
     {
-        case > 120:
-            Console.WriteLine("You got a ticket for being too fast!");
-            break;
-        case null:
-            Console.WriteLine("You got a ticket for being a snail!");
-            break;
-        default:
-            Console.WriteLine("Something went wrong...");
-            break;
+        int distanceToRun = raceDistance;
+        Console.WriteLine(vehicle.Brand);
+
+        while (vehicle.Fuel > 0 && distanceToRun > 0)
+        {
+            distanceToRun -= vehicle.KilometersPerLiter;
+            vehicle.Fuel--;
+        }
+
+        if (distanceToRun > 0)
+        {
+            Console.WriteLine($"Missed {distanceToRun}km to finish the race.");
+        }
+        else
+        {
+            Console.WriteLine($"Finished the race with {vehicle.Fuel} liters in the tank.");
+        }
+
+        Console.WriteLine("\n-------------------------\n");
     }
-}
-else
-{
-    Console.WriteLine("No money for the government :( from v2");
-}
+
+    int count = 0;
+
+    for (int i = 0; i < vehicles.Count; i++)
+    {
+        if (vehicles[i].Fuel > 0)
+        {
+            count++;
+        }
+    }
+
+    if (count <= 1)
+    {
+        canRace = false;
+    }
+
+} while (canRace);
